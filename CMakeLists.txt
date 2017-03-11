@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.5)
+cmake_policy(VERSION 3.5)
 project(city-generator-by-carykh)
+
+set(SOURCE_FILES
+  main.cpp
+)
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -34,7 +39,33 @@ else()
   set(CMAKE_SHARED_LINKER_FLAGS "${COMMON_LINKER_FLAGS} -Wl,-Bsymbolic")
 endif()
 
-set(SOURCE_FILES
-  main.cpp
-)
+find_package(assimp REQUIRED)
+if(NOT assimp)
+  add_library(assimp INTERFACE IMPORTED)
+  set_target_properties(assimp PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES "${FREETYPE_INCLUDE_DIRS}"
+    INTERFACE_LINK_LIBRARIES "${FREETYPE_LIBRARIES}"
+  )
+endif()
+find_package(Freetype REQUIRED)
+if(NOT Freetype)
+  add_library(Freetype INTERFACE IMPORTED)
+  set_target_properties(Freetype PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES "${ASSIMP_INCLUDE_DIRS}"
+    INTERFACE_LINK_LIBRARIES "${ASSIMP_LIBRARIES}"
+  )
+endif()
+find_package(glfw3 REQUIRED)
+find_package(OpenGL REQUIRED)
+if(NOT OpenGL::GL)
+  add_library(OpenGL::GL INTERFACE IMPORTED)
+  set_target_properties(OpenGL::GL PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES "${OPENGL_INCLUDE_DIR}"
+    INTERFACE_LINK_LIBRARIES "${OPENGL_gl_LIBRARY}"
+  )
+endif()
+find_package(GLEW REQUIRED)
+
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+target_compile_definitions(${PROJECT_NAME} PRIVATE GLFW_INCLUDE_NONE)
+target_link_libraries(${PROJECT_NAME} assimp Freetype glfw OpenGL::GL GLEW::GLEW)
