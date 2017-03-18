@@ -3,7 +3,12 @@ cmake_policy(VERSION 3.5)
 project(city-generator-by-carykh)
 
 set(SOURCE_FILES
-  main.cpp
+  main
+  lang
+  Camera
+  House
+  Scene
+  Window
 )
 
 set(CMAKE_CXX_STANDARD 14)
@@ -55,6 +60,7 @@ if(NOT Freetype)
     INTERFACE_LINK_LIBRARIES "${ASSIMP_LIBRARIES}"
   )
 endif()
+find_package(glm REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(OpenGL REQUIRED)
 if(NOT OpenGL::GL)
@@ -68,4 +74,4 @@ find_package(GLEW REQUIRED)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 target_compile_definitions(${PROJECT_NAME} PRIVATE GLFW_INCLUDE_NONE)
-target_link_libraries(${PROJECT_NAME} assimp Freetype glfw OpenGL::GL GLEW::GLEW)
+target_link_libraries(${PROJECT_NAME} assimp Freetype glm glfw OpenGL::GL GLEW::GLEW)
